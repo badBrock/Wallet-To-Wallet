@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hedera Wallet</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="wallet-container">
+        <!-- Header -->
+        <header class="wallet-header">
+            <img src="../assets/logo.png" alt="Hedera" class="logo">
+            <h1>Hedera Wallet</h1>
+            <div class="network-indicator" id="networkIndicator">
+                <span class="network-dot"></span>
+                <span id="networkName">Testnet</span>
+            </div>
+        </header>
+
+        <!-- Account Section -->
+        <div class="account-section" id="accountSection">
+            <div class="account-info">
+                <div class="account-id" id="accountId">Not Connected</div>
+                <div class="account-balance">
+                    <span class="balance-amount" id="hbarBalance">0</span>
+                    <span class="balance-currency">HBAR</span>
+                </div>
+            </div>
+            <button class="copy-btn" id="copyAccountId" title="Copy Account ID">📋</button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="overview">Overview</button>
+            <button class="tab-btn" data-tab="tokens">Tokens</button>
+            <button class="tab-btn" data-tab="send">Send</button>
+            <button class="tab-btn" data-tab="settings">Settings</button>
+        </nav>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- Overview Tab -->
+            <div class="tab-panel active" id="overview">
+                <div class="balance-card">
+                    <h3>Account Balance</h3>
+                    <div class="balance-display">
+                        <span class="balance-large" id="mainBalance">0 HBAR</span>
+                        <span class="balance-usd" id="balanceUsd">$0.00 USD</span>
+                    </div>
+                </div>
+                
+                
+
+                <div class="recent-transactions">
+                    <h4>Recent Transactions</h4>
+                    <div class="transaction-list" id="transactionList">
+                        <div class="no-transactions">No recent transactions</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tokens Tab -->
+            <div class="tab-panel" id="tokens">
+                <div class="token-list" id="tokenList">
+                    <div class="loading">Loading tokens...</div>
+                </div>
+                <button class="submit-btn" id="createTokenBtn" style="margin-top: 16px;">Create New Token</button>
+                <button class="add-token-btn" id="addTokenBtn">+ Add Token</button>
+            </div>
+
+            <!-- Send Tab -->
+            <div class="tab-panel" id="send">
+                <form class="send-form" id="sendForm">
+                    <div class="form-group">
+                        <label for="recipientId">Recipient Account ID</label>
+                        <input type="text" id="recipientId" placeholder="0.0.123456" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sendAmount">Amount</label>
+                        <input type="number" id="sendAmount" placeholder="0" step="0.00000001" required>
+                        <select id="sendAsset">
+                            <option value="HBAR">HBAR</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sendMemo">Memo (Optional)</label>
+                        <input type="text" id="sendMemo" placeholder="Transaction memo">
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Send Transaction</button>
+                </form>
+            </div>
+
+            <!-- Settings Tab -->
+            <div class="tab-panel" id="settings">
+                <div class="settings-section">
+                    <h4>Network</h4>
+                    <select id="networkSelect">
+                        <option value="testnet">Testnet</option>
+                        <option value="mainnet">Mainnet</option>
+                    </select>
+                </div>
+                
+                <div class="settings-section">
+                    <h4>Account Management</h4>
+                    <button class="settings-btn" id="importAccountBtn">Import Account</button>
+                    <button class="settings-btn" id="exportAccountBtn">Export Private Key</button>
+                </div>
+                
+                <div class="settings-section">
+                    <h4>Security</h4>
+                    <button class="settings-btn" id="changePasswordBtn">Change Password</button>
+                    <button class="settings-btn danger" id="lockWalletBtn">Lock Wallet</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar-container hidden" id="progressBar">
+            <div class="progress-bar-label" id="progressLabel"></div>
+            <div class="progress-bar">
+                <div class="progress-bar-fill" id="progressBarFill"></div>
+            </div>
+        </div>
+
+        <!-- Setup Screen (for first-time users) -->
+        <div class="setup-screen hidden" id="setupScreen">
+            <h2>Welcome to Hedera Wallet</h2>
+            <p>Set up your wallet to get started</p>
+            
+            <div class="setup-options">
+                <button class="setup-btn primary" id="importWalletBtn">
+                    Import Existing Wallet
+                </button>
+                <button class="setup-btn secondary" id="createWalletBtn">
+                    Create New Wallet
+                </button>
+            </div>
+        </div>
+
+        <!-- Import Wallet Modal -->
+        <div class="modal hidden" id="importModal">
+            <div class="modal-content">
+                <h3>Import Wallet</h3>
+                <form id="importForm">
+                    <div class="form-group">
+                        <label for="importAccountId">Account ID</label>
+                        <input type="text" id="importAccountId" placeholder="0.0.123456" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="importPrivateKey">Private Key</label>
+                        <input type="password" id="importPrivateKey" placeholder="Your private key" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="walletPassword">Wallet Password</label>
+                        <input type="password" id="walletPassword" placeholder="Create a password" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="cancel-btn" id="cancelImport">Cancel</button>
+                        <button type="submit" class="submit-btn">Import Wallet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Create Token Modal -->
+        <div class="modal hidden" id="createTokenModal">
+            <div class="modal-content">
+                <h3>Create New Token</h3>
+                <form id="createTokenForm">
+                    <div class="form-group">
+                        <label for="tokenName">Token Name</label>
+                        <input type="text" id="tokenName" placeholder="My Awesome Token" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tokenSymbol">Token Symbol</label>
+                        <input type="text" id="tokenSymbol" placeholder="MAT" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="initialSupply">Initial Supply</label>
+                        <input type="number" id="initialSupply" placeholder="1000000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="decimals">Decimals</label>
+                        <input type="number" id="decimals" value="0" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="cancel-btn" id="cancelCreateToken">Cancel</button>
+                        <button type="submit" class="submit-btn">Create Token</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
